@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  step-functions
+
+  Sample SAM Template for step-functions
+Globals:
+  Function:
+    Timeout: 5
+    Runtime: nodejs20.x
+
+Resources:
+  CutVegetablesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: cutVegetables.handler
+      CodeUri: ./prepare-dish
+      Events:
+        BeginRecepieApi:
+          Type: Api
+          Properties:
+            Path: /start-recepie
+            Method: POST
+
+  PrepareIngredientsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./prepare-dish
+      Handler: prepareIngredients.handler
+
+  MixIngredientsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./prepare-dish
+      Handler: mixIngredients.handler
+
+  AddVegetablesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./prepare-dish
+      Handler: addVegetables.handler
+
+  BoilRecepieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./prepare-dish
+      Handler: boilRecepie.handler
+
+  ValidationStepFunction:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Type: STANDARD
+      DefinitionUri: state/validator.asl.json
+      DefinitionSubstitutions:
+        CutVegetablesFunctionArn: !GetAtt CutVegetablesFunction.Arn
+        PrepareIngredientsFunctionArn: !GetAtt PrepareIngredientsFunction.Arn
+        MixIngredientsFunctionArn: !GetAtt MixIngredientsFunction.Arn
+        AddVegetablesFunctionArn: !GetAtt AddVegetablesFunction.Arn
+        BoilRecepieFunctionArn: !GetAtt BoilRecepieFunction.Arn
+      Role: !GetAtt StepFunctionsExecutionRole.Arn
+      Name: "RecepieBuilderStateMachine"
+
+
+  StepFunctionsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "states.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "StepFunctionsExecutionPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                  - "states:StartExecution"
+                Resource:
+                  - !GetAtt CutVegetablesFunction.Arn
+                  - !GetAtt PrepareIngredientsFunction.Arn
+                  - !GetAtt MixIngredientsFunction.Arn
+                  - !GetAtt AddVegetablesFunction.Arn
+                  - !GetAtt BoilRecepieFunction.Arn

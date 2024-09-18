@@ -1,0 +1,37 @@
+{
+    "Comment": "Recipe for Tomato Curry",
+    "StartAt": "CutVegetables",
+    "States": {
+      "CutVegetables": {
+        "Type": "Task",
+        "Resource": "${CutVegetablesFunctionArn}",
+        "TimeoutSeconds": 2,
+        "Next": "PrepareIngredients"
+      },
+      "PrepareIngredients": {
+        "Type": "Task",
+        "Resource": "${PrepareIngredientsFunctionArn}",
+        "TimeoutSeconds": 1,
+        "Next": "MixIngredients"
+      },
+      "MixIngredients": {
+        "Type": "Task",
+        "Resource": "${MixIngredientsFunctionArn}",
+        "TimeoutSeconds": 3,
+        "Next": "AddVegetables"
+      },
+      "AddVegetables": {
+        "Type": "Task",
+        "Resource": "${AddVegetablesFunctionArn}",
+        "TimeoutSeconds": 1,
+        "Next": "BoilRecipe"
+      },
+      "BoilRecipe": {
+        "Type": "Task",
+        "Resource": "${BoilRecepieFunctionArn}",
+        "TimeoutSeconds": 5,
+        "End": true
+      }
+    }
+  }
+  

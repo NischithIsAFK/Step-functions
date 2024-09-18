@@ -58,7 +58,7 @@ Resources:
         AddVegetablesFunctionArn: !GetAtt AddVegetablesFunction.Arn
         BoilRecepieFunctionArn: !GetAtt BoilRecepieFunction.Arn
       Role: !GetAtt StepFunctionsExecutionRole.Arn
-      Name: "RecepieBuilderStateMachine"
+      Name: "RecepieBuilderStateMachine-2"
 
   StepFunctionsExecutionRole:
     Type: AWS::IAM::Role

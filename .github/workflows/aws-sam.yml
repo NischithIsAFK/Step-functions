@@ -30,6 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./prepare-dish
 
       - name: Build SAM application
         run: sam build

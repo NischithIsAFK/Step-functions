@@ -46,7 +46,7 @@ Resources:
       CodeUri: ./prepare-dish
       Handler: boilRecepie.handler
 
-  ValidationStepFunction:
+  RecepieStepFunction:
     Type: AWS::Serverless::StateMachine
     Properties:
       Type: STANDARD
@@ -59,7 +59,6 @@ Resources:
         BoilRecepieFunctionArn: !GetAtt BoilRecepieFunction.Arn
       Role: !GetAtt StepFunctionsExecutionRole.Arn
       Name: "RecepieBuilderStateMachine"
-
 
   StepFunctionsExecutionRole:
     Type: AWS::IAM::Role
